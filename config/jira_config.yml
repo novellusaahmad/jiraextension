@@ -1,0 +1,7 @@
+jira:
+  base_url: "https://your-domain.atlassian.net"
+  email: "service-account@example.com"
+  api_token: "your_api_token"
+  project_key: "PROJ"
+  issue_type: "Task"
+  start_date_field_id: "customfield_10015"
