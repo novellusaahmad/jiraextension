@@ -68,6 +68,7 @@ def create_ticket():
         flash(str(exc), "error")
         return redirect(url_for("index"))
 
+
     description_lines = [
         "Details:",
         details,
@@ -94,8 +95,7 @@ def create_ticket():
                     message = "; ".join(f"{field}: {error}" for field, error in errors.items())
                 elif errors:
                     message = str(errors)
-        flash(f"Failed to create issue: {message}", "error")
-        return redirect(url_for("index"))
+
 
     issue_key = response.get("key")
     flash(f"Successfully created Jira issue {issue_key}.", "success")

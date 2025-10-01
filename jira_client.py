@@ -4,6 +4,7 @@ from __future__ import annotations
 import base64
 import logging
 from dataclasses import dataclass
+
 from typing import Any, Dict, List, Optional, Union
 
 import requests
@@ -58,6 +59,7 @@ def load_settings(path: str = "config/jira_config.yml") -> JiraSettings:
     )
 
 
+
 def _text_to_adf(text: str) -> Dict[str, Any]:
     """Convert plain-text content into a minimal Atlassian Document Format payload."""
 
@@ -109,16 +111,20 @@ class JiraClient:
         return f"{self.settings.base_url}{path}"
 
     def create_issue(
+
         self,
         summary: str,
         description: Union[str, Dict[str, Any]],
         start_date: Optional[str],
         due_date: Optional[str],
+
     ) -> Dict[str, Any]:
         fields: Dict[str, Any] = {
             "project": {"key": self.settings.project_key},
             "summary": summary,
             "issuetype": {"name": self.settings.issue_type},
+
+
         }
 
         if due_date:
@@ -127,7 +133,9 @@ class JiraClient:
         if start_date and self.settings.start_date_field_id:
             fields[self.settings.start_date_field_id] = start_date
 
+
         fields["description"] = _ensure_adf(description)
+
 
         payload = {"fields": fields}
         response = self.session.post(self._url("/rest/api/3/issue"), json=payload, timeout=30)
@@ -140,9 +148,11 @@ class JiraClient:
         return response.json()
 
     def update_issue(self, issue_key: str, fields: Dict[str, Any]) -> Dict[str, Any]:
+
         if "description" in fields:
             fields = dict(fields)
             fields["description"] = _ensure_adf(fields["description"])
+
         response = self.session.put(
             self._url(f"/rest/api/3/issue/{issue_key}"), json={"fields": fields}, timeout=30
         )
