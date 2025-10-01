@@ -4,7 +4,8 @@ from __future__ import annotations
 import base64
 import logging
 from dataclasses import dataclass
-from typing import Any, Dict, Optional
+
+from typing import Any, Dict, List, Optional, Union
 
 import requests
 import yaml
@@ -58,6 +59,40 @@ def load_settings(path: str = "config/jira_config.yml") -> JiraSettings:
     )
 
 
+
+def _text_to_adf(text: str) -> Dict[str, Any]:
+    """Convert plain-text content into a minimal Atlassian Document Format payload."""
+
+    # Split into paragraphs on double newlines while preserving intentional blank lines
+    blocks = text.split("\n\n") if text else [""]
+    adf_paragraphs = []
+
+    for block in blocks:
+        lines = block.split("\n") if block else [""]
+        content: List[Dict[str, Any]] = []
+        for index, line in enumerate(lines):
+            if line:
+                content.append({"type": "text", "text": line})
+            if index < len(lines) - 1:
+                content.append({"type": "hardBreak"})
+        paragraph: Dict[str, Any] = {"type": "paragraph"}
+        if content:
+            paragraph["content"] = content
+        adf_paragraphs.append(paragraph)
+
+    return {"type": "doc", "version": 1, "content": adf_paragraphs}
+
+
+def _ensure_adf(description: Union[str, Dict[str, Any], None]) -> Dict[str, Any]:
+    """Ensure the payload is valid ADF, converting raw strings when necessary."""
+
+    if description is None:
+        return _text_to_adf("")
+    if isinstance(description, dict):
+        return description
+    return _text_to_adf(description)
+
+
 class JiraClient:
     """Simple Jira client for creating and retrieving issues."""
 
@@ -76,13 +111,20 @@ class JiraClient:
         return f"{self.settings.base_url}{path}"
 
     def create_issue(
-        self, summary: str, description: str, start_date: Optional[str], due_date: Optional[str]
+
+        self,
+        summary: str,
+        description: Union[str, Dict[str, Any]],
+        start_date: Optional[str],
+        due_date: Optional[str],
+
     ) -> Dict[str, Any]:
         fields: Dict[str, Any] = {
             "project": {"key": self.settings.project_key},
             "summary": summary,
             "issuetype": {"name": self.settings.issue_type},
-            "description": description,
+
+
         }
 
         if due_date:
@@ -90,9 +132,10 @@ class JiraClient:
 
         if start_date and self.settings.start_date_field_id:
             fields[self.settings.start_date_field_id] = start_date
-        elif start_date:
-            # Store start date inside description when custom field is unavailable
-            fields["description"] = f"Start Date: {start_date}\n\n{description}"
+
+
+        fields["description"] = _ensure_adf(description)
+
 
         payload = {"fields": fields}
         response = self.session.post(self._url("/rest/api/3/issue"), json=payload, timeout=30)
@@ -105,6 +148,11 @@ class JiraClient:
         return response.json()
 
     def update_issue(self, issue_key: str, fields: Dict[str, Any]) -> Dict[str, Any]:
+
+        if "description" in fields:
+            fields = dict(fields)
+            fields["description"] = _ensure_adf(fields["description"])
+
         response = self.session.put(
             self._url(f"/rest/api/3/issue/{issue_key}"), json={"fields": fields}, timeout=30
         )

@@ -68,13 +68,34 @@ def create_ticket():
         flash(str(exc), "error")
         return redirect(url_for("index"))
 
+
+    description_lines = [
+        "Details:",
+        details,
+        "",
+        f"Start Date: {start_date}",
+        f"Expected By: {due_date}",
+    ]
+    description = "\n".join(description_lines)
+
     try:
-        description = f"Details:\n{details}\n\nStart Date: {start_date}\nExpected By: {due_date}"
         response = client.create_issue(summary, description, start_date, due_date)
     except HTTPError as exc:
-        message = exc.response.json().get("errors") if exc.response else str(exc)
-        flash(f"Failed to create issue: {message}", "error")
-        return redirect(url_for("index"))
+        message = str(exc)
+        if exc.response is not None:
+            try:
+                body = exc.response.json()
+            except ValueError:
+                body = None
+            if isinstance(body, dict):
+                errors = body.get("errorMessages") or body.get("errors")
+                if isinstance(errors, list):
+                    message = "; ".join(errors)
+                elif isinstance(errors, dict):
+                    message = "; ".join(f"{field}: {error}" for field, error in errors.items())
+                elif errors:
+                    message = str(errors)
+
 
     issue_key = response.get("key")
     flash(f"Successfully created Jira issue {issue_key}.", "success")
