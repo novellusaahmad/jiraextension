@@ -1,0 +1,178 @@
+:root {
+  --novellus-bg: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  --novellus-card-bg: rgba(255, 255, 255, 0.08);
+  --novellus-card-border: rgba(255, 255, 255, 0.25);
+  --novellus-text: #f4f9ff;
+  --novellus-accent: #50c9ce;
+  --novellus-accent-dark: #2b98a0;
+  --novellus-danger: #ff6b6b;
+  --novellus-success: #6fffc5;
+  --novellus-shadow: 0 25px 45px rgba(15, 32, 39, 0.35);
+  --novellus-radius: 18px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Poppins", sans-serif;
+  color: var(--novellus-text);
+  background: var(--novellus-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+}
+
+.novellus-wrapper {
+  width: min(860px, 100%);
+  backdrop-filter: blur(20px);
+}
+
+.novellus-header,
+.novellus-footer {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.novellus-header h1 {
+  margin: 0 0 12px;
+  font-size: 2.5rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.novellus-header p {
+  margin: 0;
+  font-weight: 300;
+  opacity: 0.8;
+}
+
+.novellus-card {
+  background: var(--novellus-card-bg);
+  border: 1px solid var(--novellus-card-border);
+  border-radius: var(--novellus-radius);
+  padding: 32px;
+  box-shadow: var(--novellus-shadow);
+  backdrop-filter: blur(35px);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.field label {
+  font-weight: 500;
+  margin-bottom: 8px;
+  letter-spacing: 0.03em;
+}
+
+.field input,
+.field textarea {
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  background: rgba(15, 32, 39, 0.5);
+  color: var(--novellus-text);
+  padding: 12px 16px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--novellus-accent);
+  box-shadow: 0 0 0 3px rgba(80, 201, 206, 0.25);
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 140px;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.novellus-actions {
+  text-align: right;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--novellus-accent), #74f2ce);
+  color: #0f2027;
+  border: none;
+  padding: 12px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 999px;
+  box-shadow: 0 16px 30px rgba(80, 201, 206, 0.35);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 20px 35px rgba(80, 201, 206, 0.45);
+  outline: none;
+}
+
+.novellus-footer {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.novellus-footer code {
+  background: rgba(15, 32, 39, 0.6);
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.novellus-alert-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+  display: grid;
+  gap: 12px;
+}
+
+.novellus-alert {
+  padding: 14px 18px;
+  border-radius: 14px;
+  font-weight: 500;
+  backdrop-filter: blur(18px);
+}
+
+.novellus-alert.success {
+  background: rgba(111, 255, 197, 0.15);
+  border: 1px solid rgba(111, 255, 197, 0.45);
+  color: var(--novellus-text);
+}
+
+.novellus-alert.error {
+  background: rgba(255, 107, 107, 0.18);
+  border: 1px solid rgba(255, 107, 107, 0.5);
+  color: var(--novellus-text);
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 24px 12px;
+  }
+
+  .novellus-card {
+    padding: 24px;
+  }
+
+  .novellus-header h1 {
+    font-size: 2rem;
+  }
+}

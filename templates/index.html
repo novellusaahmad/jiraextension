@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Novellus Jira Ticket Creator</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/novellus.css') }}" />
+  </head>
+  <body>
+    <div class="novellus-wrapper">
+      <header class="novellus-header">
+        <h1>Novellus Jira Ticket Creator</h1>
+        <p>Create tickets without exposing your Jira credentials.</p>
+      </header>
+
+      {% if config_error %}
+        <div class="novellus-alert error">{{ config_error }}</div>
+      {% endif %}
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <ul class="novellus-alert-list">
+            {% for category, message in messages %}
+              <li class="novellus-alert {{ category }}">{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+
+      <section class="novellus-card">
+        <form method="post" novalidate>
+          <div class="field">
+            <label for="summary">Summary</label>
+            <input type="text" id="summary" name="summary" placeholder="Short description of the issue" required />
+          </div>
+          <div class="field">
+            <label for="details">Details</label>
+            <textarea id="details" name="details" rows="5" placeholder="Full details of the request" required></textarea>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="start_date">Start Date</label>
+              <input type="date" id="start_date" name="start_date" required />
+            </div>
+            <div class="field">
+              <label for="due_date">Expected by Date</label>
+              <input type="date" id="due_date" name="due_date" required />
+            </div>
+          </div>
+          <div class="novellus-actions">
+            <button type="submit" class="btn-primary">Create Ticket</button>
+          </div>
+        </form>
+      </section>
+
+      <footer class="novellus-footer">
+        <p>
+          Configure the Jira connection in <code>config/jira_config.yml</code>. This application uses
+          a service account to create issues through the Jira REST API.
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>
